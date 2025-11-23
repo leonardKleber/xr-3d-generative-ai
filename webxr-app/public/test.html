@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebXR Diagnostics</title>
+    <style>
+        body {
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 24px;
+            padding: 40px;
+        }
+
+        .fail {
+            color: #ff0000;
+        }
+
+        .warn {
+            color: #ffff00;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>WebXR Diagnostic Log</h1>
+    <div id="log"></div>
+
+    <script>
+        const logDiv = document.getElementById('log');
+        function log(msg, type = '') {
+            const div = document.createElement('div');
+            div.textContent = `> ${msg}`;
+            if (type) div.className = type;
+            logDiv.appendChild(div);
+        }
+
+        async function runDiagnostics() {
+            // 1. Check Security (Crucial for AVP)
+            log(`Is Secure Context (HTTPS): ${window.isSecureContext}`, window.isSecureContext ? '' : 'fail');
+            if (!window.isSecureContext) {
+                log("FATAL: WebXR requires HTTPS.", "fail");
+                return;
+            }
+
+            // 2. Check API Existence
+            if (!navigator.xr) {
+                log("FATAL: navigator.xr is undefined.", "fail");
+                return;
+            }
+            log("navigator.xr exists.", "success");
+
+            // 3. Check VR Support
+            try {
+                const vrSupport = await navigator.xr.isSessionSupported('immersive-vr');
+                log(`immersive-vr supported: ${vrSupport}`, vrSupport ? '' : 'warn');
+            } catch (e) {
+                log(`VR Check Error: ${e.message}`, 'fail');
+            }
+
+            // 4. Check AR Support (The one failing)
+            try {
+                const arSupport = await navigator.xr.isSessionSupported('immersive-ar');
+                log(`immersive-ar supported: ${arSupport}`, arSupport ? '' : 'fail');
+
+                if (!arSupport) {
+                    log("Reason: The OS is reporting AR is unavailable.", "fail");
+                }
+            } catch (e) {
+                log(`AR Check Error: ${e.message}`, 'fail');
+            }
+        }
+
+        runDiagnostics();
+    </script>
+</body>
+
+</html>
