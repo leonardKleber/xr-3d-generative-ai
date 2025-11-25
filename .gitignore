@@ -1,2 +1,8 @@
 node_modules
 __pycache__
+venv
+
+# All files from the NVIDIA repo
+services
+config.py
+utils.py

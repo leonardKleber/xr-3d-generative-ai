@@ -36,7 +36,26 @@ ngrok http 5173
 ```
 
 ### Web App API
-...
+Clone the NVIDIA repository
+```
+https://github.com/NVIDIA-AI-Blueprints/3d-object-generation
+```
+
+Copy the required files into your API directory. From the cloned repo, move the following into your `webxr-app-api` folder:
+   - `services/`  
+   - `config.py`  
+   - `utils.py`
+
+Install dependencies**  
+In the `webxr-app-api` directory, run:
+```bash
+pip install -r requirements.txt
+```
+
+Start the API server**  
+```bash
+python3 app.py
+```
 
 ### Generative Models
 ...
