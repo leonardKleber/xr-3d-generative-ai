@@ -57,7 +57,7 @@ async def get_model(filename: str):
 
 @app.get("/images/{filename}")
 async def get_model(filename: str):
-    file_path = os.path.join("assets/images" + filename)
+    file_path = os.path.join("assets/images", filename)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Image not found")
 
@@ -79,7 +79,7 @@ async def generate_image(request: GenerateImageRequest):
             status_code=500, 
             detail=f"Image generation failed: {msg}"
         )
-    return re.search(r"[^/]+$", image_path).group()
+    return os.path.basename(image_path)
 
 
 @app.post("/generate_model")
