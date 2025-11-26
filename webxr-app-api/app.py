@@ -85,7 +85,7 @@ async def generate_image(request: GenerateImageRequest):
 @app.post("/generate_model")
 async def generate_model(request: GenerateModelRequest):
     success, msg, glb_path = model_3d_service.generate_3d_model(
-        image_path=request.image_path,
+        image_path=f"assets/images/{request.image_path}",
         output_dir="assets/models"
     )
     if not success:
