@@ -6,3 +6,4 @@ venv
 services
 config.py
 utils.py
+assets
