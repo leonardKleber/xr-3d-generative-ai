@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import uvicorn
 import os
 import mimetypes
+import re
 
 mimetypes.add_type("model/vnd.usdz+zip", ".usdz")
 mimetypes.add_type("model/gltf-binary", ".glb")
@@ -54,9 +55,9 @@ async def get_model(filename: str):
     )
 
 
-@app.get("/images/{filepath}")
-async def get_model(filepath: str):
-    file_path = os.path.join(filepath)
+@app.get("/images/{filename}")
+async def get_model(filename: str):
+    file_path = os.path.join("assets/images" + filename)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Image not found")
 
@@ -78,7 +79,7 @@ async def generate_image(request: GenerateImageRequest):
             status_code=500, 
             detail=f"Image generation failed: {msg}"
         )
-    return image_path
+    return re.search(r"[^/]+$", image_path).group()
 
 
 @app.post("/generate_model")
