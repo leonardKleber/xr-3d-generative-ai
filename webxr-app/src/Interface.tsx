@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 
-const API_BASE_URL = "http://localhost:3001"
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 
 
 export default function Interface() {
@@ -18,20 +18,16 @@ export default function Interface() {
 
         try {
             const res = await axios.post(`${API_BASE_URL}/generate_image`, { prompt });
-            const imgFile = res.data;
+            const generatedImage: string = imageResponse.data;
+            setImageFileName(generatedImage);
 
-            setImageFileName(imgFile);
-
-            const res2 = await axios.post(`${API_BASE_URL}/generate_model`, { image_path: imgFile });
-            const modelFile = res2.data;
-
-            setModelFileName(modelFile);
-
+            const modelResponse = await axios.post(`${API_BASE_URL}/generate_model`, { image_path: generatedImage });
+            setModelFileName(modelResponse.data);
         } catch (err) {
-            console.error(err);
+            console.error("Error generating image/model:", err);
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return (
