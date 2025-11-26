@@ -17,7 +17,7 @@ export default function Interface() {
         setModelFileName("");
 
         try {
-            const res = await axios.post(`${API_BASE_URL}/generate_image`, { prompt });
+            const res = await axios.post(`${API_BASE_URL}/generate_image`, { prompt: prompt });
             const generatedImage: string = res.data;
             setImageFileName(generatedImage);
 
