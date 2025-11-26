@@ -54,6 +54,18 @@ async def get_model(filename: str):
     )
 
 
+@app.get("/images/{filepath}")
+async def get_model(filepath: str):
+    file_path = os.path.join(filepath)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="Image not found")
+
+    return FileResponse(
+        path=file_path, 
+        content_disposition_type="inline"
+    )
+
+
 @app.post("/generate_image")
 async def generate_image(request: GenerateImageRequest):
     success, msg, image_path = image_gen_service.generate_image_from_prompt(
