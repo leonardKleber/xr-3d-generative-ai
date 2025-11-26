@@ -18,11 +18,11 @@ export default function Interface() {
 
         try {
             const res = await axios.post(`${API_BASE_URL}/generate_image`, { prompt });
-            const generatedImage: string = imageResponse.data;
+            const generatedImage: string = res.data;
             setImageFileName(generatedImage);
 
-            const modelResponse = await axios.post(`${API_BASE_URL}/generate_model`, { image_path: generatedImage });
-            setModelFileName(modelResponse.data);
+            const res2 = await axios.post(`${API_BASE_URL}/generate_model`, { image_path: generatedImage });
+            setModelFileName(res2.data);
         } catch (err) {
             console.error("Error generating image/model:", err);
         } finally {
