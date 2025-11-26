@@ -3,27 +3,32 @@ import axios from 'axios';
 
 
 const API_BASE_URL = "http://localhost:3001"
-const sampleModel = "/robot.usdz";
 
 
 export default function Interface() {
     const [prompt, setPrompt] = useState<string>("A futuristic looking robot");
     const [loading, setLoading] = useState<boolean>(false);
-
     const [imageFileName, setImageFileName] = useState<string>("");
-
-    // Store the generated URL here
-    //const [generatedFile, setGeneratedFile] = useState<string | null>(null);
+    const [modelFileName, setModelFileName] = useState<string>("");
 
     const handleGenerate = async () => {
         setLoading(true);
+        setImageFileName("");
+        setModelFileName("");
 
         try {
             const res = await axios.post(API_BASE_URL+"/generate_image", {prompt: prompt});
-            const filename = res.data;
-            setImageFileName(filename);
+            setImageFileName(res.data);
         } catch (err) {
             console.error("Error generating image:", err);
+            throw err;
+        }
+
+        try {
+            const res = await axios.post(API_BASE_URL+"/generate_model", {image_path: imageFileName});
+            setModelFileName(res.data);
+        } catch (err) {
+            console.error("Error generating model:", err);
             throw err;
         }
 
@@ -34,10 +39,8 @@ export default function Interface() {
     return (
         <div style={styles.container}>
             <h1>XR 3D Generator</h1>
-            <p style={{ color: '#aaa' }}>
-                Generate a model and drag it into your room.
-            </p>
-
+            <p style={{ color: '#aaa' }}>Generate a model and drag it into your room.</p>
+            
             <div style={styles.inputGroup}>
                 <input
                     style={styles.input}
@@ -49,12 +52,12 @@ export default function Interface() {
                     {loading ? "Generating..." : "Generate"}
                 </button>
             </div>
-
-            {imageFileName !== "" && (
+            
+            {(imageFileName !== "" && modelFileName !== "") && (
                 <div style={styles.resultBox}>
                     <h3>Model Ready!</h3>
-                    <a rel="ar" href={sampleModel}>
-                        {imageFileName !== "" && (
+                    <a rel="ar" href={`${API_BASE_URL}/models/${modelFileName}`}>
+                        {(imageFileName !== "" && modelFileName !== "") && (
                             <img 
                                 src={`${API_BASE_URL}/images/${imageFileName}`} 
                                 alt="Tap to View in AR"
