@@ -14,6 +14,10 @@ from services.image_generation_service import ImageGenerationService
 from services.model_3d_service import Model3DService
 
 
+BLENDER_EXE = "blender"   # or full path e.g. "C:/Program Files/Blender/blender.exe"
+CONVERTER_SCRIPT = "glb_to_usdz.py"   # path to your Python script
+
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -36,37 +40,28 @@ class GenerateModelRequest(BaseModel):
 
 
 def convert_glb_to_usdz(glb_path: str) -> str:
-    abs_input = os.path.abspath(glb_path)
-    output_path = abs_input.replace(".glb", ".usdz")
+    if not os.path.exists(glb_path):
+        raise FileNotFoundError(f"GLB file not found: {glb_path}")
 
-    if os.path.exists(output_path):
-        return output_path
-
-    input_dir = os.path.dirname(abs_input)
-    input_filename = os.path.basename(abs_input)
-    output_filename = os.path.basename(output_path)
+    output_usdz = glb_path.replace(".glb", ".usdz")
 
     cmd = [
-        "docker", "run", "--rm",
-        "-v", f"{input_dir}:/data",
-        "plattar/xrutils",
-        "usd_from_gltf",
-        f"/data/{input_filename}",
-        f"/data/{output_filename}"
+        BLENDER_EXE,
+        "--background",
+        "--factory-startup",
+        "--python", CONVERTER_SCRIPT,
+        "--",
+        glb_path,
+        output_usdz
     ]
 
     try:
-        subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(cmd, check=True, capture_output=True)
+        return output_usdz
+
     except subprocess.CalledProcessError as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error converting GLB to USDZ: {e.stderr.decode('utf-8', errors='ignore')}"
-        )
-
-    if not os.path.exists(output_path):
-        raise HTTPException(status_code=500, detail="USDZ conversion failed")
-
-    return output_path
+        print("Blender conversion error:", e.stderr.decode())
+        raise RuntimeError("USDZ conversion failed")
 
 
 @app.get("/models/{filename}")
@@ -77,23 +72,21 @@ async def get_model(filename: str):
         raise HTTPException(status_code=404, detail="Model not found")
 
     if filename.endswith(".glb"):
-        usdz_path = convert_glb_to_usdz(file_path)
-        return FileResponse(
-            path=usdz_path,
-            media_type="model/vnd.usdz+zip",
-            content_disposition_type="inline",
-        )
+        try:
+            file_path = convert_glb_to_usdz(file_path)
+            filename = os.path.basename(file_path)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"USDZ conversion error: {e}")
 
+    media_type = "application/octet-stream"
     if filename.endswith(".usdz"):
-        return FileResponse(
-            path=file_path,
-            media_type="model/vnd.usdz+zip",
-            content_disposition_type="inline",
-        )
+        media_type = "model/vnd.usdz+zip"
+    elif filename.endswith(".glb"):
+        media_type = "model/gltf-binary"
 
     return FileResponse(
         path=file_path,
-        media_type="application/octet-stream",
+        media_type=media_type,
         content_disposition_type="inline"
     )
 
@@ -101,7 +94,7 @@ async def get_model(filename: str):
 @app.get("/images/{filename}")
 async def get_model(filename: str):
     file_path = os.path.join("assets/images", filename)
-    
+
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Image not found")
 
