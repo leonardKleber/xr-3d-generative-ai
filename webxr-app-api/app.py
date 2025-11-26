@@ -93,8 +93,7 @@ async def generate_model(request: GenerateModelRequest):
             status_code=500, 
             detail=f"3D generation failed: {msg}"
         )
-    filename = os.path.basename(glb_path)
-    return f"/models/{filename}"
+    return os.path.basename(glb_path)
 
 
 if __name__ == "__main__":
