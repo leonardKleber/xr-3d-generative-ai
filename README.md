@@ -19,13 +19,6 @@ Before you begin, ensure you have the following installed:
 Navigate to the `webxr-app` folder and run the following commands:
 ```bash
 npm install
-```
-Then run the backend server:
-```bash
-npx ts-node server.ts
-```
-Then run the vite dev server:
-```bash
 npm run dev -- --host
 ```
 #### Optional when used with Apple Vision Pro
