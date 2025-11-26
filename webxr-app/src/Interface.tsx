@@ -17,23 +17,21 @@ export default function Interface() {
         setModelFileName("");
 
         try {
-            const res = await axios.post(API_BASE_URL+"/generate_image", {prompt: prompt});
-            setImageFileName(res.data);
-        } catch (err) {
-            console.error("Error generating image:", err);
-            throw err;
-        }
+            const res = await axios.post(`${API_BASE_URL}/generate_image`, { prompt });
+            const imgFile = res.data;
 
-        try {
-            const res = await axios.post(API_BASE_URL+"/generate_model", {image_path: imageFileName});
-            setModelFileName(res.data);
+            setImageFileName(imgFile);
+
+            const res2 = await axios.post(`${API_BASE_URL}/generate_model`, { image_path: imgFile });
+            const modelFile = res2.data;
+
+            setModelFileName(modelFile);
+
         } catch (err) {
-            console.error("Error generating model:", err);
-            throw err;
+            console.error(err);
         }
 
         setLoading(false);
-
     };
 
     return (
