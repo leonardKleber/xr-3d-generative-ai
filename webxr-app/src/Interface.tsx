@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
+// const API_BASE_URL =  (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 
 
 export default function Interface() {
@@ -17,11 +17,11 @@ export default function Interface() {
         setModelFileName("");
 
         try {
-            const res = await axios.post(`${API_BASE_URL}/generate_image`, { prompt });
+            const res = await axios.post(`/generate_image`, { prompt });
             const generatedImage: string = res.data;
             setImageFileName(generatedImage);
 
-            const res2 = await axios.post(`${API_BASE_URL}/generate_model`, { image_path: generatedImage });
+            const res2 = await axios.post(`/generate_model`, { image_path: generatedImage });
             setModelFileName(res2.data);
         } catch (err) {
             console.error("Error generating image/model:", err);
@@ -50,10 +50,10 @@ export default function Interface() {
             {(imageFileName !== "" && modelFileName !== "") && (
                 <div style={styles.resultBox}>
                     <h3>Model Ready!</h3>
-                    <a rel="ar" href={`${API_BASE_URL}/models/${modelFileName}`}>
+                    <a rel="ar" href={`/models/${modelFileName}`}>
                         {(imageFileName !== "" && modelFileName !== "") && (
                             <img 
-                                src={`${API_BASE_URL}/images/${imageFileName}`} 
+                                src={`/images/${imageFileName}`} 
                                 alt="Tap to View in AR"
                                 style={styles.previewImage}
                             />
