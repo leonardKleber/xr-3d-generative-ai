@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import SpinningLogo from "./SpinningLogo";
 
 export default function Interface() {
     const [prompt, setPrompt] = useState<string>("A futuristic looking robot");
@@ -17,7 +18,10 @@ export default function Interface() {
     const [renderImageView, setRenderImageView] = useState<boolean>(false);
     const [renderFinalImage, setRenderFinalImage] = useState<boolean>(false);
 
+    const [loadingModel, setLoadingModel] = useState<boolean>(false);
+
     const handleImageSelect = async (number: number) => {
+        setLoadingModel(true)
         let selected: string = "";
 
         if (number === 1) {
@@ -38,6 +42,7 @@ export default function Interface() {
         } catch (err) {
             console.error("Error generating model:", err);
         } finally {
+            setLoadingModel(false);
             setRenderFinalImage(true);
         }
     };
@@ -90,30 +95,36 @@ export default function Interface() {
                         </div>
                     ) : (
                         <div style={styles.imageGridContainer}>
-                            <img
-                                src={`/images/${imageFileName1}`}
-                                alt="Image 1"
-                                style={styles.gridImage}
-                                onClick={() => handleImageSelect(1)}
-                            />
-                            <img
-                                src={`/images/${imageFileName2}`}
-                                alt="Image 2"
-                                style={styles.gridImage}
-                                onClick={() => handleImageSelect(2)}
-                            />
-                            <img
-                                src={`/images/${imageFileName3}`}
-                                alt="Image 3"
-                                style={styles.gridImage}
-                                onClick={() => handleImageSelect(3)}
-                            />
-                            <img
-                                src={`/images/${imageFileName4}`}
-                                alt="Image 4"
-                                style={styles.gridImage}
-                                onClick={() => handleImageSelect(4)}
-                            />
+                            {loadingModel ? (
+                                <SpinningLogo />
+                            ) : (
+                                <div>
+                                    <img
+                                        src={`/images/${imageFileName1}`}
+                                        alt="Image 1"
+                                        style={styles.gridImage}
+                                        onClick={() => handleImageSelect(1)}
+                                    />
+                                    <img
+                                        src={`/images/${imageFileName2}`}
+                                        alt="Image 2"
+                                        style={styles.gridImage}
+                                        onClick={() => handleImageSelect(2)}
+                                    />
+                                    <img
+                                        src={`/images/${imageFileName3}`}
+                                        alt="Image 3"
+                                        style={styles.gridImage}
+                                        onClick={() => handleImageSelect(3)}
+                                    />
+                                    <img
+                                        src={`/images/${imageFileName4}`}
+                                        alt="Image 4"
+                                        style={styles.gridImage}
+                                        onClick={() => handleImageSelect(4)}
+                                    />
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -130,26 +141,6 @@ export default function Interface() {
                     </button>
                 </div>
             )}
-
-            {/* 
-            
-            {(imageFileName !== "" && modelFileName !== "") && (
-                <div style={styles.resultBox}>
-                    <h3>Model Ready!</h3>
-                    <a rel="ar" href={`/models/${modelFileName}`}>
-                        {(imageFileName !== "" && modelFileName !== "") && (
-                            <img 
-                                src={`/images/${imageFileName}`} 
-                                alt="Tap to View in AR"
-                                style={styles.previewImage}
-                            />
-                        )}
-                    </a>
-                    <p style={{ fontSize: '12px' }}>Tap the icon above to place in room</p>
-                </div>
-            )}
-
-            */}
         </div>
     );
 }
@@ -183,3 +174,5 @@ const styles: { [key: string]: React.CSSProperties } = {
         cursor: "pointer",
     }
 };
+
+
