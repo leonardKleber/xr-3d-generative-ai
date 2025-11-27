@@ -1,32 +1,67 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-
-// const API_BASE_URL =  (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
-
-
 export default function Interface() {
     const [prompt, setPrompt] = useState<string>("A futuristic looking robot");
     const [loading, setLoading] = useState<boolean>(false);
-    const [imageFileName, setImageFileName] = useState<string>("");
+    
+    const [imageFileName1, setImageFileName1] = useState<string>("");
+    const [imageFileName2, setImageFileName2] = useState<string>("");
+    const [imageFileName3, setImageFileName3] = useState<string>("");
+    const [imageFileName4, setImageFileName4] = useState<string>("");
+
+    const [finalImageName, setFinalImageName] = useState<string>("");
+
     const [modelFileName, setModelFileName] = useState<string>("");
 
-    const handleGenerate = async () => {
-        setLoading(true);
-        setImageFileName("");
-        setModelFileName("");
+    const [renderImageView, setRenderImageView] = useState<boolean>(false);
+    const [renderFinalImage, setRenderFinalImage] = useState<boolean>(false);
+
+    const handleImageSelect = async (number: number) => {
+        if (number === 1) {
+            setFinalImageName(imageFileName1);
+        } else if (number === 2) {
+            setFinalImageName(imageFileName2);
+        } else if (number === 3) {
+            setFinalImageName(imageFileName3);
+        } else if (number === 4) {
+            setFinalImageName(imageFileName4);
+        }
 
         try {
-            const res = await axios.post(`/generate_image`, { prompt : prompt });
-            const generatedImage: string = res.data;
-            setImageFileName(generatedImage);
-
-            const res2 = await axios.post(`/generate_model`, { image_path: generatedImage });
-            setModelFileName(res2.data);
+            const res = await axios.post(`/generate_model`, { image_path: finalImageName });
+            setModelFileName(res.data);
         } catch (err) {
-            console.error("Error generating image/model:", err);
+            console.error("Error generating model:", err);
+        } finally {
+            setRenderFinalImage(true);
+        }
+    };
+
+    const handleInitialGenerate = async () => {
+        setLoading(true);
+        setImageFileName1("");
+        setImageFileName2("");
+        setImageFileName3("");
+        setImageFileName4("");
+
+        try {
+            const res1 = await axios.post(`/generate_image`, { prompt : prompt });
+            setImageFileName1(res1.data);
+
+            const res2 = await axios.post(`/generate_image`, { prompt : prompt });
+            setImageFileName1(res2.data);
+
+            const res3 = await axios.post(`/generate_image`, { prompt : prompt });
+            setImageFileName1(res3.data);
+
+            const res4 = await axios.post(`/generate_image`, { prompt : prompt });
+            setImageFileName1(res4.data);
+        } catch (err) {
+            console.error("Error generating image:", err);
         } finally {
             setLoading(false);
+            setRenderImageView(true);
         }
     };
 
@@ -35,17 +70,64 @@ export default function Interface() {
             <h1>XR 3D Generator</h1>
             <p style={{ color: '#aaa' }}>Generate a model and drag it into your room.</p>
             
-            <div style={styles.inputGroup}>
-                <input
-                    style={styles.input}
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="Describe your object..."
-                />
-                <button style={styles.button} onClick={handleGenerate} disabled={loading}>
-                    {loading ? "Generating..." : "Generate"}
-                </button>
-            </div>
+            {renderImageView ? (
+                <div>
+                    {renderFinalImage ? (
+                        <div style={styles.resultBox}>
+                            <h3>Model Ready!</h3>
+                            <a rel="ar" href={`/models/${modelFileName}`}>
+                                <img 
+                                    src={`/images/${finalImageName}`} 
+                                    alt="Tap to View in AR"
+                                    style={styles.previewImage}
+                                />
+                            </a>
+                            <p style={{ fontSize: '12px' }}>Tap the icon above to place in room</p>
+                        </div>
+                    ) : (
+                        <div style={styles.imageGridContainer}>
+                            <img
+                                src={`/images/${imageFileName1}`}
+                                alt="Image 1"
+                                style={styles.gridImage}
+                                onClick={() => handleImageSelect(1)}
+                            />
+                            <img
+                                src={`/images/${imageFileName2}`}
+                                alt="Image 2"
+                                style={styles.gridImage}
+                                onClick={() => handleImageSelect(2)}
+                            />
+                            <img
+                                src={`/images/${imageFileName3}`}
+                                alt="Image 3"
+                                style={styles.gridImage}
+                                onClick={() => handleImageSelect(3)}
+                            />
+                            <img
+                                src={`/images/${imageFileName4}`}
+                                alt="Image 4"
+                                style={styles.gridImage}
+                                onClick={() => handleImageSelect(4)}
+                            />
+                        </div>
+                    )}
+                </div>
+            ) : (
+                <div style={styles.inputGroup}>
+                    <input
+                        style={styles.input}
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        placeholder="Describe your object..."
+                    />
+                    <button style={styles.button} onClick={handleInitialGenerate} disabled={loading}>
+                        {loading ? "Generating..." : "Generate"}
+                    </button>
+                </div>
+            )}
+
+            {/* 
             
             {(imageFileName !== "" && modelFileName !== "") && (
                 <div style={styles.resultBox}>
@@ -62,6 +144,8 @@ export default function Interface() {
                     <p style={{ fontSize: '12px' }}>Tap the icon above to place in room</p>
                 </div>
             )}
+
+            */}
         </div>
     );
 }
