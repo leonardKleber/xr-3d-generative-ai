@@ -128,6 +128,9 @@ async def generate_model(request: GenerateModelRequest):
         output_dir="assets/models"
     )
 
+    # Convert model from glb to usdz
+    
+
     if not success:
         raise HTTPException(
             status_code=500, 
