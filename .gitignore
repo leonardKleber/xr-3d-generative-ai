@@ -3,7 +3,6 @@ __pycache__
 venv
 
 # All files from the NVIDIA repo
-services
 config.py
 utils.py
 assets
@@ -14,3 +13,7 @@ webxr-app-api/nim_trellis/run_trellis.py
 webxr-app-api/nim_trellis/start_trellis_container.sh
 webxr-app-api/nim_trellis/trellis_container.log
 webxr-app-api/nim_trellis/wsl_mount.py
+webxr-app-api/services/agent_service.py
+webxr-app-api/services/guardrail_service.py
+webxr-app-api/services/model_3d_service.py
+webxr-app-api/services/__init__.py
