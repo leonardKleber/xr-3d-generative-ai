@@ -1,2 +1,16 @@
 node_modules
 __pycache__
+venv
+
+# All files from the NVIDIA repo
+services
+config.py
+utils.py
+assets
+webxr-app-api/nim_trellis/constants.py
+webxr-app-api/nim_trellis/manager.py
+webxr-app-api/nim_trellis/ngc.py
+webxr-app-api/nim_trellis/run_trellis.py
+webxr-app-api/nim_trellis/start_trellis_container.sh
+webxr-app-api/nim_trellis/trellis_container.log
+webxr-app-api/nim_trellis/wsl_mount.py

@@ -19,13 +19,6 @@ Before you begin, ensure you have the following installed:
 Navigate to the `webxr-app` folder and run the following commands:
 ```bash
 npm install
-```
-Then run the backend server:
-```bash
-npx ts-node server.ts
-```
-Then run the vite dev server:
-```bash
 npm run dev -- --host
 ```
 #### Optional when used with Apple Vision Pro
@@ -36,7 +29,26 @@ ngrok http 5173
 ```
 
 ### Web App API
-...
+Clone the NVIDIA repository
+```
+https://github.com/NVIDIA-AI-Blueprints/3d-object-generation
+```
+
+Copy the required files into your API directory. From the cloned repo, move the following into your `webxr-app-api` folder:
+   - `services/`  
+   - `config.py`  
+   - `utils.py`
+
+Install dependencies**  
+In the `webxr-app-api` directory, run:
+```bash
+pip install -r requirements.txt
+```
+
+Start the API server**  
+```bash
+python3 app.py
+```
 
 ### Generative Models
 ...

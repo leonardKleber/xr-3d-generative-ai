@@ -1,49 +1,40 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { type GenerationResponse } from './types';
 
-// We don't need the 'store' or 'setModels' props for this specific feature
-// because Quick Look handles the 3D part natively, not inside the Canvas.
-interface InterfaceProps {
-    store?: any;
-    setModels?: any;
-}
 
-export default function Interface({ }: InterfaceProps) {
+// const API_BASE_URL =  (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
+
+
+export default function Interface() {
     const [prompt, setPrompt] = useState<string>("A futuristic looking robot");
     const [loading, setLoading] = useState<boolean>(false);
-
-    // Store the generated URL here
-    const [generatedFile, setGeneratedFile] = useState<string | null>(null);
+    const [imageFileName, setImageFileName] = useState<string>("");
+    const [modelFileName, setModelFileName] = useState<string>("");
 
     const handleGenerate = async () => {
         setLoading(true);
-        setGeneratedFile(null); // Reset previous result
+        setImageFileName("");
+        setModelFileName("");
 
         try {
-            // const response = await axios.post<GenerationResponse>('http://localhost:3001/generate', {
-            //     prompt: prompt
-            // });
-            const response = await axios.post<GenerationResponse>('/generate', {
-                prompt: prompt
-            });
+            const res = await axios.post(`/generate_image`, { prompt : prompt });
+            const generatedImage: string = res.data;
+            setImageFileName(generatedImage);
 
-            // Save the USDZ/Reality file URL
-            setGeneratedFile(response.data.modelUrl);
-
-        } catch (error) {
-            console.error("Generation failed:", error);
-            alert("Failed to connect to backend");
+            const res2 = await axios.post(`/generate_model`, { image_path: generatedImage });
+            setModelFileName(res2.data);
+        } catch (err) {
+            console.error("Error generating image/model:", err);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (
         <div style={styles.container}>
             <h1>XR 3D Generator</h1>
             <p style={{ color: '#aaa' }}>Generate a model and drag it into your room.</p>
-
-            {/* INPUT SECTION */}
+            
             <div style={styles.inputGroup}>
                 <input
                     style={styles.input}
@@ -55,25 +46,18 @@ export default function Interface({ }: InterfaceProps) {
                     {loading ? "Generating..." : "Generate"}
                 </button>
             </div>
-
-            {/* RESULT SECTION */}
-            {generatedFile && (
+            
+            {(imageFileName !== "" && modelFileName !== "") && (
                 <div style={styles.resultBox}>
                     <h3>Model Ready!</h3>
-
-                    {/* 
-                        Safari Quick Look Requirements:
-                        1. rel="ar"
-                        2. href points to .usdz file
-                        3. Contains an <img> tag (can be a thumbnail or an icon)
-                    */}
-                    <a rel="ar" href={generatedFile}>
-                        <img
-                            // Just a placeholder thumbnail image
-                            src="https://developer.apple.com/augmented-reality/quick-look/models/vintagerobot2k/vintagerobot2k.jpg"
-                            alt="Tap to View in AR"
-                            style={styles.previewImage}
-                        />
+                    <a rel="ar" href={`/models/${modelFileName}`}>
+                        {(imageFileName !== "" && modelFileName !== "") && (
+                            <img 
+                                src={`/images/${imageFileName}`} 
+                                alt="Tap to View in AR"
+                                style={styles.previewImage}
+                            />
+                        )}
                     </a>
                     <p style={{ fontSize: '12px' }}>Tap the icon above to place in room</p>
                 </div>
