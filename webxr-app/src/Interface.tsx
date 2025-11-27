@@ -50,13 +50,13 @@ export default function Interface() {
             setImageFileName1(res1.data);
 
             const res2 = await axios.post(`/generate_image`, { prompt : prompt });
-            setImageFileName1(res2.data);
+            setImageFileName2(res2.data);
 
             const res3 = await axios.post(`/generate_image`, { prompt : prompt });
-            setImageFileName1(res3.data);
+            setImageFileName3(res3.data);
 
             const res4 = await axios.post(`/generate_image`, { prompt : prompt });
-            setImageFileName1(res4.data);
+            setImageFileName4(res4.data);
         } catch (err) {
             console.error("Error generating image:", err);
         } finally {
