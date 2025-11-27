@@ -18,18 +18,22 @@ export default function Interface() {
     const [renderFinalImage, setRenderFinalImage] = useState<boolean>(false);
 
     const handleImageSelect = async (number: number) => {
+        let selected: string = "";
+
         if (number === 1) {
-            setFinalImageName(imageFileName1);
+            selected = imageFileName1;
         } else if (number === 2) {
-            setFinalImageName(imageFileName2);
+            selected = imageFileName2;
         } else if (number === 3) {
-            setFinalImageName(imageFileName3);
+            selected = imageFileName3;
         } else if (number === 4) {
-            setFinalImageName(imageFileName4);
+            selected = imageFileName4;
         }
 
+        setFinalImageName(selected);
+
         try {
-            const res = await axios.post(`/generate_model`, { image_path: finalImageName });
+            const res = await axios.post(`/generate_model`, { image_path: selected });
             setModelFileName(res.data);
         } catch (err) {
             console.error("Error generating model:", err);
@@ -161,5 +165,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     button: { padding: '12px 24px', cursor: 'pointer', background: '#00d2ff', border: 'none', borderRadius: '8px', fontWeight: 'bold' },
     resultBox: { marginTop: '20px', padding: '20px', background: '#333', borderRadius: '15px' },
     previewImage: { width: '150px', height: '150px', objectFit: 'cover', borderRadius: '10px', marginBottom: '15px' },
-    arButton: { padding: '10px 20px', background: 'white', color: 'black', border: 'none', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer' }
+    arButton: { padding: '10px 20px', background: 'white', color: 'black', border: 'none', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer' },
+    imageGridContainer: {
+        display: "grid",
+        gridTemplateColumns: "repeat(2, 1fr)",
+        gap: "10px",
+        width: "100%",
+        maxWidth: "350px",
+        margin: "0 auto",
+    },
+
+    gridImage: {
+        width: "100%",
+        height: "auto",
+        borderRadius: "8px",
+        objectFit: "cover",
+        cursor: "pointer",
+    }
 };
