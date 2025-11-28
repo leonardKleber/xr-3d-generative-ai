@@ -14,8 +14,8 @@ from services.image_generation_service import ImageGenerationService
 from services.model_3d_service import Model3DService
 
 
-BLENDER_EXE = "blender"   # or full path e.g. "C:/Program Files/Blender/blender.exe"
-CONVERTER_SCRIPT = "glb_to_usdz.py"   # path to your Python script
+BLENDER_EXE = "blender"
+CONVERTER_SCRIPT = "glb_to_usdz.py"
 
 
 app = FastAPI()
@@ -127,9 +127,6 @@ async def generate_model(request: GenerateModelRequest):
         image_path=f"assets/images/{request.image_path}",
         output_dir="assets/models"
     )
-
-    # Convert model from glb to usdz
-    
 
     if not success:
         raise HTTPException(
