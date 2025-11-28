@@ -29,16 +29,6 @@ ngrok http 5173
 ```
 
 ### Web App API
-Clone the NVIDIA repository
-```
-https://github.com/NVIDIA-AI-Blueprints/3d-object-generation
-```
-
-Copy the required files into your API directory. From the cloned repo, move the following into your `webxr-app-api` folder:
-   - `services/`  
-   - `config.py`  
-   - `utils.py`
-
 Install dependencies**  
 In the `webxr-app-api` directory, run:
 ```bash
@@ -71,4 +61,10 @@ python3 app.py
     * The model will "pop out" of the window.
     * Look at your floor or table to place the object.
     * The object persists in your room even if you minimize Safari.
+
+## Acknowledgements
+Parts of this project are based on code and models from the following repository, which we modified for our use case:
+```
+https://github.com/NVIDIA-AI-Blueprints/3d-object-generation
+```
 
