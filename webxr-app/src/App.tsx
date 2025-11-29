@@ -1,9 +1,16 @@
-import Interface from './Interface';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import StartPage from "./pages/StartPage";
+import GenerationPage from "./pages/GenerationPage";
 
-export default function App() {
+function App() {
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#111' }}>
-      <Interface />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<StartPage />} />
+        <Route path="/xr" element={<GenerationPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
+
+export default App;
